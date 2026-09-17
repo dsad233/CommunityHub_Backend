@@ -16,6 +16,7 @@ export default tseslint.config(
       '@typescript-eslint/no-invalid-void-type': 'off',
       '@typescript-eslint/no-empty-object-type': 'off',
       'prefer-const': 'off',
+      '@typescript-eslint/no-unused-vars': 'warn',
     },
   },
 );

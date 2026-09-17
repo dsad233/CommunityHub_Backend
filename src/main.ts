@@ -1,4 +1,4 @@
-import express, { Express } from 'express';
+import express, { Express, NextFunction, Request, Response } from 'express';
 
 import MainRouter from './mainRouter';
 
@@ -15,6 +15,7 @@ import { NODE_ENV, RUNNING_PORT } from './common/configs/keys';
 import helmet from 'helmet';
 import { rateLimitConfig } from './common/middlewares/rateLimitConfig';
 import { CronController } from './cron/cron.controller';
+import { HttpError } from 'http-errors';
 
 const app: Express = express();
 const port: number = RUNNING_PORT;
@@ -47,7 +48,9 @@ app.use(MorganConfig());
 app.use('/api', MainRouter);
 
 // 에러 핸들링 미들웨어
-app.use(ErrorMiddleware);
+app.use((error: HttpError, req: Request, res: Response, next: NextFunction) => {
+  ErrorMiddleware(error, req, res, next);
+});
 
 app.listen(port, () => {
   prisma.$connect();
