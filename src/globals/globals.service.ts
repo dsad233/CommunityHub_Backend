@@ -1,5 +1,6 @@
 import { Authority, State } from '../../generated/prisma/enums';
 import { PrefixType } from '../common/libs/type';
+import { transRoleName } from '../common/utils';
 import { RedisService } from '../redis/redis.service';
 import { GlobalsRepository } from './globals.repostiroy';
 
@@ -66,7 +67,7 @@ export class GlobalsService {
     {
       nickname: string;
       posts: number;
-      role: Authority;
+      role: string;
     }[]
   > => {
     // const cachedPopularUsers = await this.redisService.get(
@@ -88,7 +89,7 @@ export class GlobalsService {
     const result: {
       nickname: string;
       posts: number;
-      role: Authority;
+      role: string;
     }[] = [];
 
     for (const prop of topUsers) {
@@ -101,7 +102,7 @@ export class GlobalsService {
               prop.id,
             ),
           ) || 0,
-        role: prop.roles?.authority ?? Authority.USER,
+        role: transRoleName(prop.roles?.authority as Authority) as string,
       });
     }
 
