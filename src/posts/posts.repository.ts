@@ -706,15 +706,22 @@ export class PostsRepository {
       },
       select: {
         image: true,
+        createdAt: true,
       },
     });
 
     const result: string[] = [];
 
-    images.map((image) => {
-      const imageBufferStr = Buffer.from(image.image).toString('base64');
-      result.push(imageBufferStr);
-    });
+    // createdAt 순으로 정렬 후, 리턴
+    images
+      .sort(
+        (a, b) =>
+          new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime(),
+      )
+      .map((image) => {
+        const imageBufferStr = Buffer.from(image.image).toString('base64');
+        result.push(imageBufferStr);
+      });
 
     return result.length > 0 ? result : null;
   };
