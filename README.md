@@ -1,16 +1,32 @@
-# ComunityHub - 커뮤니티 웹 프로젝트
+# CommunityHub - 커뮤니티 웹 프로젝트
 
 Node.js와 TypeScript를 기반으로 한 현대적인 커뮤니티 웹 서비스입니다. Express, Prisma, Redis를 활용하여 구축되었습니다.
 
 > 🌐 **웹 페이지**: https://communityhub.kro.kr  
 > 📱 **프론트엔드 코드**: https://github.com/dsad233/mini_type_web
 
+<img src="./images/main.png" alt="메인 페이지" />
+
 ## 🎯 프로젝트 개요
 
-- **프로젝트명**: ComunityHub
+- **프로젝트명**: CommunityHub
 - **버전**: 1.0.0
-- **라이선스**: MIT
 - **기술 스택**: Node.js, TypeScript, Express, Prisma, Redis, MySQL
+
+## 🖥️ 화면 구성
+
+<table>
+       <tr>
+              <td align="center"><strong>마이페이지</strong></td>
+              <td align="center"><strong>게시글 목록</strong></td>
+              <td align="center"><strong>게시글 상세</strong></td>
+       </tr>
+       <tr>
+              <td align="center"><img src="./images/mypage.png" width="220" alt="마이페이지 화면" /></td>
+              <td align="center"><img src="./images/posts.png" width="220" alt="게시글 목록 화면" /></td>
+              <td align="center"><img src="./images/post.png" width="220" alt="게시글 상세 화면" /></td>
+       </tr>
+</table>
 
 ## ✨ 주요 기능
 
@@ -164,10 +180,6 @@ src/
 ### 캐시 정책
 
 - TTL: 10분 (600초) ~ 30분 (1800초)
-
-## 📝 라이선스
-
-이 프로젝트는 MIT 라이선스를 따릅니다.
 
 ---
 
