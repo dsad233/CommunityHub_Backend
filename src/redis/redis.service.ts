@@ -19,7 +19,7 @@ export class RedisService {
     ttl: string | number,
     value: string | Buffer | number,
   ): Promise<void> {
-    await this.redis.setex(key, ttl, value);
+    await this.redis.set(key, value, 'EX', ttl);
   }
 
   async delete(key: string): Promise<void> {
