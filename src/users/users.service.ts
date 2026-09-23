@@ -323,12 +323,20 @@ export class UsersService {
         userImage.id as string,
         body.image,
       );
+
+      // 캐시된 user 세션 정보 삭제 처리
+      await this.redisService.delete(
+        `${TYPE.PrefixType.USERS}:REQUEST:id=${id}`,
+      );
     }
   };
 
   // 유저 정보 업데이트
   update = async (id: string, body: TUpdateUserDto): Promise<void> => {
     await this.usersRepository.update(id, body);
+
+    // 캐시된 user 세션 정보 삭제 처리
+    await this.redisService.delete(`${TYPE.PrefixType.USERS}:REQUEST:id=${id}`);
   };
 
   // 유저 회원 탈퇴
@@ -340,6 +348,7 @@ export class UsersService {
     await this.redisService.delete(
       `${TYPE.PrefixType.USERS}:${TYPE.TokenType.REFRESH}:id=${id}`,
     );
+    // 캐시된 user 세션 정보 삭제 처리
     await this.redisService.delete(`${TYPE.PrefixType.USERS}:REQUEST:id=${id}`);
 
     // 탈퇴 처리
