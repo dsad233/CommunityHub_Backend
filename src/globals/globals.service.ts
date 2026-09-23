@@ -165,12 +165,14 @@ export class GlobalsService {
       });
     }
 
-    // 30분 캐시 처리
-    await this.redisService.setex(
-      `${PrefixType.CACHED}:${PrefixType.POPULAR}:${PrefixType.USERS}`,
-      1800,
-      JSON.stringify(result),
-    );
+    if (result) {
+      // 30분 캐시 처리
+      await this.redisService.setex(
+        `${PrefixType.CACHED}:${PrefixType.POPULAR}:${PrefixType.USERS}`,
+        1800,
+        JSON.stringify(result),
+      );
+    }
 
     return result;
   };
