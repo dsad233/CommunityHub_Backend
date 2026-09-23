@@ -58,7 +58,7 @@ export class GlobalsController {
     }>
   > => {
     return res.status(StatusCodes.OK).json({
-      message: '당일 카운트 목록 조회 완료.',
+      message: '오늘의 활동 통계 조회 완료.',
       data: await this.globalsService.todayCounts(),
     });
   };
