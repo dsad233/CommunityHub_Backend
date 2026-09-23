@@ -106,23 +106,26 @@ export class PostsService {
     };
   }> => {
     if (query.orderBy === OrderByStatus.VIEWS) {
-      // const cachedPosts = await this.redisService.get(
-      //   `${PrefixType.CACHED}:${PrefixType.POSTS}:page=${paginations.page}:category=${query.category}:orderBy=${OrderByStatus.VIEWS}`,
-      // );
+      // 검색어가 유효하지 않을 시에만 캐시 사용
+      if (!query.search) {
+        const cachedPosts = await this.redisService.get(
+          `${PrefixType.CACHED}:${PrefixType.POSTS}:page=${paginations.page}:pages=${paginations.pages}:category=${query.category}:orderBy=${OrderByStatus.VIEWS}`,
+        );
 
-      // 캐쉬 히드 시, 캐쉬 데이터 리턴
-      // if (cachedPosts) {
-      //   return {
-      //     posts: JSON.parse(cachedPosts),
-      //     paginations: {
-      //       page: Number(paginations.page),
-      //       pages: Number(paginations.pages),
-      //       count: await this.postsRepository.countPosts(
-      //         query.category as string,
-      //       ),
-      //     },
-      //   };
-      // }
+        // 캐시 히드 시, 캐시 데이터 리턴
+        if (cachedPosts) {
+          return {
+            posts: JSON.parse(cachedPosts),
+            paginations: {
+              page: Number(paginations.page),
+              pages: Number(paginations.pages),
+              count: await this.postsRepository.countPosts(
+                query.category as string,
+              ),
+            },
+          };
+        }
+      }
 
       const postIds = (
         await this.postsRepository.topViewPosts(paginations)
@@ -134,12 +137,14 @@ export class PostsService {
         postIds,
       );
 
-      // 캐쉬 미히트시 캐쉬 적제 (10분)
-      // await this.redisService.setex(
-      //   `${PrefixType.CACHED}:${PrefixType.POSTS}:page=${paginations.page}`,
-      //   600,
-      //   JSON.stringify(posts),
-      // );
+      if (posts) {
+        // 캐시 미히트시 캐시 적재 (5분)
+        await this.redisService.setex(
+          `${PrefixType.CACHED}:${PrefixType.POSTS}:page=${paginations.page}:pages=${paginations.pages}:category=${query.category}:orderBy=${OrderByStatus.VIEWS}`,
+          300,
+          JSON.stringify(posts),
+        );
+      }
 
       return {
         posts: posts,
@@ -153,32 +158,37 @@ export class PostsService {
       };
     }
 
-    // const cachedPosts = await this.redisService.get(
-    //   `${PrefixType.CACHED}:${PrefixType.POSTS}:page=${paginations.page}:category=${query.category}:orderBy=${query.orderBy}`,
-    // );
+    // 검색어가 유효하지 않을 시에만 캐시 사용
+    if (!query.search) {
+      const cachedPosts = await this.redisService.get(
+        `${PrefixType.CACHED}:${PrefixType.POSTS}:page=${paginations.page}:pages=${paginations.pages}:category=${query.category}:orderBy=${query.orderBy}`,
+      );
 
-    // 캐쉬 히드 시, 캐쉬 데이터 리턴
-    // if (cachedPosts) {
-    //   return {
-    //     posts: JSON.parse(cachedPosts),
-    //     paginations: {
-    //       page: Number(paginations.page),
-    //       pages: Number(paginations.pages),
-    //       count: await this.postsRepository.countPosts(
-    //         query.category as string,
-    //       ),
-    //     },
-    //   };
-    // }
+      // 캐시 히드 시, 캐시 데이터 리턴
+      if (cachedPosts) {
+        return {
+          posts: JSON.parse(cachedPosts),
+          paginations: {
+            page: Number(paginations.page),
+            pages: Number(paginations.pages),
+            count: await this.postsRepository.countPosts(
+              query.category as string,
+            ),
+          },
+        };
+      }
+    }
 
     const posts = await this.postsRepository.find(paginations, query, null);
 
-    // 캐쉬 미히트시 캐쉬 적제 (10분)
-    // await this.redisService.setex(
-    //   `${PrefixType.CACHED}:${PrefixType.POSTS}:page=${paginations.page}`,
-    //   600,
-    //   JSON.stringify(posts),
-    // );
+    if (posts) {
+      // 캐시 미히트시 캐시 적재 (5분)
+      await this.redisService.setex(
+        `${PrefixType.CACHED}:${PrefixType.POSTS}:page=${paginations.page}:pages=${paginations.pages}:category=${query.category}:orderBy=${query.orderBy}`,
+        300,
+        JSON.stringify(posts),
+      );
+    }
 
     return {
       posts: posts,
