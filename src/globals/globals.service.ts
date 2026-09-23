@@ -130,7 +130,7 @@ export class GlobalsService {
     }[]
   > => {
     const cachedPopularUsers = await this.redisService.get(
-      `${PrefixType.COUNT}:${PrefixType.POPULAR}:${PrefixType.POSTS}`,
+      `${PrefixType.CACHED}:${PrefixType.POPULAR}:${PrefixType.USERS}`,
     );
 
     if (cachedPopularUsers) {
@@ -167,7 +167,7 @@ export class GlobalsService {
 
     // 30분 캐시 처리
     await this.redisService.setex(
-      `${PrefixType.COUNT}:${PrefixType.POPULAR}:${PrefixType.POSTS}`,
+      `${PrefixType.CACHED}:${PrefixType.POPULAR}:${PrefixType.USERS}`,
       1800,
       JSON.stringify(result),
     );
