@@ -3,17 +3,31 @@ import {
   POST_LIKE_WEIGHT,
   POST_VIEW_WEIGHT,
 } from '../common/configs/keys';
-import { CategoryType } from '../common/libs/type';
+import { CategoryType, PrefixType } from '../common/libs/type';
+import { RedisService } from '../redis/redis.service';
 import { CategoriesRepository } from './categories.repository';
 
 export class CategoriesService {
   private readonly categoriesRepository: CategoriesRepository;
-  constructor(categoriesRepository: CategoriesRepository) {
+  private readonly redisService: RedisService;
+  constructor(
+    categoriesRepository: CategoriesRepository,
+    redisService: RedisService,
+  ) {
     this.categoriesRepository = categoriesRepository;
+    this.redisService = redisService;
   }
 
   // 인기 카테고리 조회
-  popularCategory = async () => {
+  popularCategory = async (): Promise<string> => {
+    const cached = await this.redisService.get(
+      `${PrefixType.CACHED}:${PrefixType.POPULAR}:${PrefixType.CATEGORY}`,
+    );
+
+    if (cached) {
+      return JSON.parse(cached);
+    }
+
     const posts = await this.categoriesRepository.findByCount();
     const postsSchema = await this.categoriesRepository.findByPostsSchema(
       posts.map((post) => post.id),
@@ -53,6 +67,15 @@ export class CategoriesService {
       if (prop[0] === topPost[0]?.category) {
         popularCategory = prop[1];
       }
+    }
+
+    if (popularCategory) {
+      // 30분 캐시 처리
+      await this.redisService.setex(
+        `${PrefixType.CACHED}:${PrefixType.POPULAR}:${PrefixType.CATEGORY}`,
+        1800,
+        JSON.stringify(popularCategory),
+      );
     }
 
     return popularCategory || '자유';
