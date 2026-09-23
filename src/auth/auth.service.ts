@@ -508,10 +508,13 @@ export class AuthService {
 
     if (alreadyNickname) {
       // 중복된 닉네임이 있을 때, 랜덤 형식의 닉네임을 생성하여 저장
-      googleReqUser['nickname'] = uniqueNamesGenerator({
-        dictionaries: [adjectives, animals],
-        length: Math.floor(Math.random() * 2 + 1),
-      });
+      googleReqUser['nickname'] =
+        uniqueNamesGenerator({
+          dictionaries: [adjectives, animals],
+          length: 2,
+        }) +
+        Math.floor(Math.random() * (9999 - 1 + 1)) +
+        1;
     }
 
     // 계정 생성
